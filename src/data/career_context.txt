@@ -1,0 +1,78 @@
+[CV]
+MOSES MARZUKI SAMOSIR
+moses.samosir02@gmail.com | +6282127285866 | linkedin.com/in/moses-marzuki-samosir/
+
+PROFESSIONAL SUMMARY
+Seorang Backend Software Engineer yang sangat termotivasi dengan pengalaman lebih dari 2 tahun dalam merancang, mengembangkan,
+dan mengoptimalkan sistem sisi server (backend) dan aplikasi berbasis web yang kompleks.
+Memiliki dasar yang kuat dalam rekayasa perangkat lunak dan keahlian di bidang sistem ERP serta optimasi basis data.
+Mahir dalam merancang, menyesuaikan, dan menerapkan solusi tingkat perusahaan (enterprise-level) dan berbasis web untuk mengatasi berbagai tantangan bisnis,
+dengan keahlian mendalam dalam Python, arsitektur basis data SQL (PostgreSQL, MariaDB), dan pengembangan API. Berpengalaman di lingkungan Docker dan cloud.
+
+TECHNICAL SKILLS
+- Programming Languages: Python (Advanced), JavaScript, PHP, Java, HTML, CSS, Dart (Flutter), Kotlin.
+- Databases & Caching: PostgreSQL, MariaDB, MySQL, Redis, Firebase, SQL.
+- Frameworks & Technologies: Frappe/ERPNext, Laravel, Node.js, RESTful APIs, Frappe Cloud.
+- Cloud & DevOps: Docker, NGINX, CI/CD, Git, Cloud Computing.
+- Soft Skills: Agile methodology, team collaboration, mentorship, problem-solving, debugging, excellent communication (English proficiency).
+
+PROFESSIONAL EXPERIENCE
+
+PT. Sumber Inovasi Informatika (Tangerang, Indonesia)
+Software Developer (Mar 2024 – Presents)
+- Pertamina Upstream Data Center (PUDC): Merancang sistem manajemen gudang untuk 700.000 lokasi dan lebih dari 2,6 juta item. Mengoptimalkan kueri basis data kritis, mengurangi waktu pengambilan data hingga diperkirakan 40%. Menggunakan Docker untuk kontainerisasi dan mengurangi kesalahan konfigurasi deployment lebih dari 90%.
+- Food & Beverage ERP System (Client: Tanamera Coffee): Merancang arsitektur Enterprise Service Bus (ESB) untuk sinkronisasi data penjualan dari 15+ outlet ritel. Mengembangkan konektor POS kustom yang secara signifikan mengurangi waktu rekonsiliasi akhir hari.
+- Broiler Contract Management System: Merekayasa sistem ERPNext kustom untuk produksi unggas, mencakup manajemen DOC hingga penjualan akhir, dan merancang integrasi API dengan aplikasi seluler.
+- Version Upgrade Project (Client: Arjuna Group): Memimpin migrasi ERPNext dari v12 ke v14, berhasil menyelesaikan lebih dari 50 masalah kompatibilitas.
+- Team Mentorship: Melakukan mentoring kepada junior developer mengenai konsep ERPNext dan praktik terbaik.
+
+Intelligent, Innovative and Creatif Studio (MBKM) (Bandung, Indonesia)
+Part-time Web Developer (Feb 2023 – May 2024)
+- Mengembangkan dan memelihara aplikasi web full-stack menggunakan framework Laravel dan berkolaborasi dalam lingkungan tim Agile.
+
+Maranatha Christian University (Bandung, Indonesia)
+Seasonal - Assistant Lecturer for Programming Paradigms (Aug 2023 – Feb 2024)
+- Mendukung mahasiswa dalam mempelajari paradigma pemrograman Python dan Java.
+
+EDUCATION
+MARANATHA CHRISTIAN UNIVERSITY (Bandung, Indonesia)
+- Bachelor of Science: Information Technology (Sept 2020 – Feb 2024)
+- GPA: 3.73 / 4.00. Lulus dalam 3,5 tahun.
+- Aktivis di BPK (Badan Pelayanan Kerohanian).
+
+PORTFOLIO
+- Sistem Infomasi Penelitian dan Pengabdian Masyarakat (Laravel, MVC): Menggunakan arsitektur MVC dan merancang skema basis data yang ternormalisasi.
+
+- SOSIAL MEDIA
+    - GitHub: https://github.com/samosirmoses
+    - LinkedIn: https://www.linkedin.com/in/moses-marzuki-samosir/
+
+CERTIFICATIONS
+- Dicoding – Programming Basics to Become a Software Developer (Oct 2023)
+- Dicoding – Git Basics with GitHub (Sep 2023)
+- Dicoding – Structured Query Language (SQL) Basic (Sep 2023)
+- AWS Academy Graduate – AWS Academy Cloud Foundations (May 2022)
+
+ORGANIZATIONS
+- Gerakan Mahasiswa Kristen Indonesia (GMKI) (Bandung, Indonesia) – Functional Secretary of Information and Communication (Feb 2023 – Sept 2024). Memimpin departemen teknologi dan mengelola media sosial organisasi.
+
+[SHORT STORY]
+Kisah Moses Marzuki Samosir adalah narasi tentang pertumbuhan yang cepat dan didorong oleh tujuan.
+Ia memulai perjalanan profesionalnya dengan menyelesaikan gelar Sarjana Teknologi Informasi di Maranatha Christian University dalam waktu 3,5 tahun,
+sebuah bukti kerja keras dan kemampuannya untuk belajar dengan cepat—dengan IPK yang mengesankan 3,73/4,00.
+
+Sebagai seorang Backend Software Engineer, Moses unggul dalam dunia sistem *Enterprise Resource Planning* (ERP),
+terutama menggunakan Frappe/ERPNext dan Python. Tidak lama setelah lulus,
+ia dengan cepat memposisikan dirinya sebagai spesialis dalam sistem skala besar.
+Di PT. Sumber Inovasi Informatika, ia memimpin proyek-proyek penting,
+termasuk merancang sistem manajemen gudang untuk Pertamina Upstream Data Center
+yang harus menangani 2,6 juta item—sebuah tantangan yang ia atasi dengan mengoptimalkan kueri basis data hingga 40%.
+Keahliannya dalam DevOps dengan Docker juga mengurangi kesalahan *deployment* hingga lebih dari 90%, menunjukkan fokusnya pada efisiensi operasional.
+
+Moses tidak hanya berfokus pada *coding*, tetapi juga pada pelayanan.
+Ia memiliki latar belakang Kristen yang kuat (terlibat aktif di BPK dan menjabat sebagai Sekretaris Fungsional Informasi dan Komunikasi di GMKI),
+yang mencerminkan etos kerja dan komitmennya pada komunitas.
+Jiwa kepemimpinan dan pengajaran ini terlihat dari perannya sebagai Asisten Dosen yang membimbing mahasiswa dalam pemrograman Python dan Java,
+serta perannya sebagai mentor bagi junior developer di kantornya.
+Dari mengintegrasikan data penjualan dari 15+ gerai kopi terkemuka hingga mengotomatisasi proses bisnis yang kompleks di industri unggas,
+Moses adalah seorang pengembang yang secara konsisten menerjemahkan kebutuhan bisnis yang rumit menjadi solusi teknologi yang elegan dan efisien.
