@@ -13,7 +13,7 @@ const Chatbot: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([
         {
             id: 1,
-            text: "Halo! Saya Personal AI Assistant Kamu. Silakan ajukan pertanyaan apa pun tentang pengalaman dan keahlian Moses!",
+            text: "Hi! I'm Moses' AI Assistant. Feel free to ask me anything about his experience, skills, and career background.",
             sender: "bot"
         }
     ]);
@@ -35,7 +35,7 @@ const Chatbot: React.FC = () => {
 
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
-                const userMessageText = inputText.trim();
+        const userMessageText = inputText.trim();
         if (userMessageText === '' || isLoading) return;
 
         const newUserMessage: Message = {
@@ -49,21 +49,21 @@ const Chatbot: React.FC = () => {
         setIsLoading(true);
 
         try {
-                        const response = await fetch('/api/chat', {
+            const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({message: userMessageText})
             });
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({message: 'Gagal terhubung ke server.'}));
-                throw new Error(errorData.message || 'Gagal terhubung ke AI Assistant.');
+                const errorData = await response.json().catch(() => ({message: 'Unable to connect to server.'}));
+                throw new Error(errorData.message || 'Failed to connect to AI Assistant.');
             }
 
             const data = await response.json();
 
             if (!data || !data.message) {
-                throw new Error('Respon tidak valid dari AI Assistant.');
+                throw new Error('Invalid response from AI Assistant.');
             }
 
             if (data.messageParts && Array.isArray(data.messageParts) && data.messageParts.length > 0) {
@@ -88,14 +88,9 @@ const Chatbot: React.FC = () => {
                 setMessages(prevMessages => [...prevMessages, botResponse]);
             }
         } catch (error) {
-            let errorText = "⚠️ Ups! Terjadi kesalahan koneksi.";
+            let errorText = "Sorry, there was a connection error. Please try again.";
             if (error instanceof Error) {
-
-                if (error.message.includes('⚠️')) {
-                    errorText = error.message;
-                } else {
-                    errorText = `⚠️ ${error.message}`;
-                }
+                errorText = error.message;
             }
 
             const errorMessage: Message = {
@@ -112,8 +107,7 @@ const Chatbot: React.FC = () => {
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && !isLoading && inputText.trim() !== '') {
             handleSendMessage({
-                preventDefault: () => {
-                },
+                preventDefault: () => {},
             } as unknown as React.FormEvent);
         }
     };
@@ -122,7 +116,7 @@ const Chatbot: React.FC = () => {
         setMessages([
             {
                 id: 1,
-                text: "Halo! Saya Personal AI Assistant Kamu. Silakan ajukan pertanyaan apa pun tentang pengalaman dan keahlian Moses!",
+                text: "Hi! I'm Moses' AI Assistant. Feel free to ask me anything about his experience, skills, and career background.",
                 sender: "bot"
             }
         ]);
@@ -132,28 +126,26 @@ const Chatbot: React.FC = () => {
 
     return (
         <div
-            className="max-w-md w-full h-[800px] bg-gradient-to-br from-blue-50/80 via-white/60 to-gray-200/80 border border-blue-100 shadow-2xl rounded-3xl overflow-hidden flex flex-col font-sans backdrop-blur-xl"
+            className="max-w-md w-full h-[800px] bg-white border border-gray-200 shadow-xl rounded-2xl overflow-hidden flex flex-col font-sans"
             role="region" aria-label="Chatbot">
-            {/* HEADER */}
             <header
-                className="p-6 border-b border-blue-100 bg-white/50 flex items-center justify-between backdrop-blur-md">
+                className="p-5 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="h-5 w-5 rounded-full bg-gradient-to-br from-green-400 to-green-600 shadow"
-                         aria-label="Online status"></div>
-                    <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight" id="chatbot-title">
-                        <span className="mr-2">💬</span> Moses AI Assistant
+                    <div className="h-3 w-3 rounded-full bg-green-500" aria-label="Online status"></div>
+                    <h2 className="text-lg font-semibold text-gray-800" id="chatbot-title">
+                        Moses AI Assistant
                     </h2>
                 </div>
                 <button
                     type="button"
-                    className="text-xs text-gray-500 px-3 py-1 border border-blue-100 rounded-full hover:bg-blue-50 transition shadow"
+                    className="text-xs text-gray-600 px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
                     onClick={handleClearChat}
                     aria-label="Clear chat"
                 >
                     Clear
                 </button>
             </header>
-            <div className="flex-1 p-6 overflow-y-auto space-y-4 bg-transparent" role="list"
+            <div className="flex-1 p-5 overflow-y-auto space-y-3 bg-gray-50" role="list"
                  aria-labelledby="chatbot-title">
                 {messages.map(msg => (
                     <ChatMessage key={msg.id} message={msg}/>
@@ -161,42 +153,42 @@ const Chatbot: React.FC = () => {
                 {isLoading && (
                     <div className="flex justify-start">
                         <div
-                            className="flex items-center gap-2 p-3 bg-white/70 text-gray-800 rounded-xl border border-gray-100 animate-pulse shadow-lg">
+                            className="flex items-center gap-2 p-3 bg-white text-gray-600 rounded-lg border border-gray-200">
                             <span
                                 className="h-4 w-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
-                            Bot sedang mengetik...
+                            Typing...
                         </div>
                     </div>
                 )}
                 <div ref={messagesEndRef}/>
             </div>
-            <footer className="p-6 border-t border-blue-100 bg-white/50 backdrop-blur-md">
+            <footer className="p-5 border-t border-gray-200 bg-white">
                 <form onSubmit={handleSendMessage} className="flex gap-2" aria-label="Send message">
                     <input
                         ref={inputRef}
                         type="text"
-                        placeholder="Tanyakan tentang latar belakang karir saya..."
+                        placeholder="Ask about Moses' career background..."
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        className="flex-1 p-3 border border-blue-200 rounded-xl text-gray-900 bg-white/80 focus:outline-none focus:border-blue-400 transition duration-200 shadow-sm"
+                        className="flex-1 p-3 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                         aria-label="Message input"
                         autoComplete="off"
                     />
                     <button
                         type="submit"
-                        className="bg-gradient-to-br from-blue-600 to-blue-400 text-white font-semibold px-6 py-3 rounded-xl hover:from-blue-700 hover:to-blue-500 transition duration-200 disabled:opacity-50 flex items-center justify-center shadow-lg"
+                        className="bg-blue-600 text-white font-medium px-5 py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                         disabled={inputText.trim() === '' || isLoading}
                         aria-label="Send message"
                     >
                         {isLoading ? (
-                            <span className="flex items-center">
+                            <span className="flex items-center gap-2">
                                 <span
-                                    className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
-                                Mengirim...
+                                    className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                                Sending
                             </span>
                         ) : (
-                            "Kirim"
+                            "Send"
                         )}
                     </button>
                 </form>
