@@ -26,7 +26,7 @@ export default function Home() {
 
                     {/* Main heading */}
                     <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-                        Hey, I'm{' '}
+                        {`Hey, I'm `}
                         <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 text-transparent bg-clip-text">
                             Moses
                         </span>
