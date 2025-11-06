@@ -1,6 +1,8 @@
 "use client";
 import React, {useState, useEffect, useRef} from "react";
 import { ChatMessage } from "./ChatMessage";
+import { sendQuestion } from "@/lib/sendQuestion";
+import { useDeviceType } from "@/hooks/useDeviceType";
 
 interface Message {
     id: number;
@@ -8,18 +10,23 @@ interface Message {
     sender: "user" | "bot";
 }
 
-const Chatbot: React.FC = () => {
+interface ChatbotProps {
+    onClose?: () => void;
+}
+
+const Chatbot: React.FC<ChatbotProps> = ({ onClose }) => {
     const [inputText, setInputText] = useState('');
     const [messages, setMessages] = useState<Message[]>([
         {
             id: 1,
-            text: "Hi! I'm Moses' AI Assistant. Feel free to ask me anything about his experience, skills, and career background.",
+            text: "Hey there! 👋 I'm here to help you learn more about Moses. Ask me anything about his work experience, projects, or skills!",
             sender: "bot"
         }
     ]);
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const deviceType = useDeviceType();
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
@@ -47,6 +54,11 @@ const Chatbot: React.FC = () => {
         setMessages(prevMessages => [...prevMessages, newUserMessage]);
         setInputText('');
         setIsLoading(true);
+
+        // Simpan pertanyaan ke Firestore (non-blocking)
+        sendQuestion(userMessageText).catch(err => {
+            console.error('Failed to save question:', err);
+        });
 
         try {
             const response = await fetch('/api/chat', {
@@ -116,7 +128,7 @@ const Chatbot: React.FC = () => {
         setMessages([
             {
                 id: 1,
-                text: "Hi! I'm Moses' AI Assistant. Feel free to ask me anything about his experience, skills, and career background.",
+                text: "Hey there! 👋 I'm here to help you learn more about Moses. Ask me anything about his work experience, projects, or skills!",
                 sender: "bot"
             }
         ]);
@@ -126,72 +138,144 @@ const Chatbot: React.FC = () => {
 
     return (
         <div
-            className="max-w-md w-full h-[800px] bg-white border border-gray-200 shadow-xl rounded-2xl overflow-hidden flex flex-col font-sans"
+            className="w-full h-full bg-gradient-to-b from-gray-50 to-white overflow-hidden flex flex-col"
             role="region" aria-label="Chatbot">
-            <header
-                className="p-5 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="h-3 w-3 rounded-full bg-green-500" aria-label="Online status"></div>
-                    <h2 className="text-lg font-semibold text-gray-800" id="chatbot-title">
-                        Moses AI Assistant
-                    </h2>
+            {/* Header with Avatar */}
+            <header className="relative px-5 py-4 md:py-5 border-b border-gray-200 bg-white/80 backdrop-blur-md">
+                {/* Decorative gradient line */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600"></div>
+
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        {/* Avatar */}
+                        <div className="relative">
+                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                                M
+                            </div>
+                            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+                        </div>
+                        <div>
+                            <h2 className="text-base md:text-lg font-bold text-gray-900">
+                                Moses
+                            </h2>
+                            <p className="text-xs text-gray-500 flex items-center gap-1">
+                                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                Available now
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            className="text-xs font-medium text-gray-600 px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors"
+                            onClick={handleClearChat}
+                            aria-label="Clear chat"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                        {deviceType !== 'mobile' && onClose && (
+                            <button
+                                type="button"
+                                className="text-gray-500 hover:text-gray-700 transition-colors p-1"
+                                onClick={onClose}
+                                aria-label="Close chat"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        )}
+                    </div>
                 </div>
-                <button
-                    type="button"
-                    className="text-xs text-gray-600 px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
-                    onClick={handleClearChat}
-                    aria-label="Clear chat"
-                >
-                    Clear
-                </button>
             </header>
-            <div className="flex-1 p-5 overflow-y-auto space-y-3 bg-gray-50" role="list"
-                 aria-labelledby="chatbot-title">
+
+            {/* Messages Area */}
+            <div className="flex-1 p-4 md:p-5 overflow-y-auto space-y-4" role="list">
                 {messages.map(msg => (
                     <ChatMessage key={msg.id} message={msg}/>
                 ))}
                 {isLoading && (
                     <div className="flex justify-start">
-                        <div
-                            className="flex items-center gap-2 p-3 bg-white text-gray-600 rounded-lg border border-gray-200">
-                            <span
-                                className="h-4 w-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
-                            Typing...
+                        <div className="flex items-center gap-2 px-4 py-3 bg-white text-gray-600 rounded-2xl shadow-sm border border-gray-100">
+                            <div className="flex gap-1">
+                                <span className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></span>
+                                <span className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></span>
+                                <span className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></span>
+                            </div>
                         </div>
                     </div>
                 )}
                 <div ref={messagesEndRef}/>
             </div>
-            <footer className="p-5 border-t border-gray-200 bg-white">
-                <form onSubmit={handleSendMessage} className="flex gap-2" aria-label="Send message">
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        placeholder="Ask about Moses' career background..."
-                        value={inputText}
-                        onChange={(e) => setInputText(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        className="flex-1 p-3 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-                        aria-label="Message input"
-                        autoComplete="off"
-                    />
+
+            {/* Input Area */}
+            <footer className="p-4 md:p-5 border-t border-gray-200 bg-white">
+                {/* Quick suggestions (optional) */}
+                {messages.length === 1 && !isLoading && (
+                    <div className="flex gap-2 mb-3 overflow-x-auto pb-2">
+                        {['Experience', 'Skills', 'Projects'].map((suggestion) => (
+                            <button
+                                key={suggestion}
+                                onClick={() => setInputText(`Tell me about Moses' ${suggestion.toLowerCase()}`)}
+                                className="text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full whitespace-nowrap transition-colors"
+                            >
+                                {suggestion}
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                <form onSubmit={handleSendMessage} className="flex gap-2 items-end">
+                    <div className="flex-1 relative">
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            placeholder={deviceType === 'mobile' ? "Type a message..." : "Ask me anything about Moses..."}
+                            value={inputText}
+                            onChange={(e) => setInputText(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            className="w-full px-4 py-3 text-sm md:text-base
+                                     bg-gray-50 border border-gray-200 rounded-2xl
+                                     text-gray-900 placeholder-gray-400
+                                     focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+                                     transition-all"
+                            aria-label="Message input"
+                            autoComplete="off"
+                        />
+                    </div>
                     <button
                         type="submit"
-                        className="bg-blue-600 text-white font-medium px-5 py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                        className={`
+                            flex items-center justify-center
+                            w-12 h-12 rounded-2xl
+                            transition-all duration-200
+                            ${inputText.trim() === '' || isLoading
+                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                : 'bg-gradient-to-br from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                            }
+                        `}
                         disabled={inputText.trim() === '' || isLoading}
                         aria-label="Send message"
                     >
                         {isLoading ? (
-                            <span className="flex items-center gap-2">
-                                <span
-                                    className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
-                                Sending
-                            </span>
+                            <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
                         ) : (
-                            "Send"
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                            </svg>
                         )}
                     </button>
                 </form>
+
+                {/* Footer text */}
+                <p className="text-xs text-center text-gray-400 mt-3">
+                    Powered by AI • Response time ~2s
+                </p>
             </footer>
         </div>
     );

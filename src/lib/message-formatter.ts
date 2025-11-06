@@ -4,13 +4,13 @@ export function splitMessageIntoBubbles(message: string): string[] {
   const cleanedMessage = message.trim();
 
   if (!cleanedMessage) {
-    return ["Maaf, tidak ada respons."];
+    return ["No response generated."];
   }
 
   const { MAX_WORDS_PER_BUBBLE, MAX_BUBBLES } = MESSAGE_CONFIG;
   const messageParts: string[] = [];
 
-  // Pisahkan berdasarkan paragraf (double newline)
+  // Pisahkan berdasarkan paragraf
   const paragraphs = cleanedMessage
     .split(/\n\n+/)
     .filter(p => p.trim() !== '');
