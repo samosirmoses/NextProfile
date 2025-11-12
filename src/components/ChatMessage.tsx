@@ -10,14 +10,20 @@ export interface Message {
 const formatMessageText = (text: string) => {
     // First, normalize the text by fixing common AI formatting issues
     const normalized = text
+        // Remove stray spaces placed before punctuation (e.g. "word ." -> "word.")
+        .replace(/\s+([.,;:!?])/g, '$1')
+        // Fix tokens like "Node . js" -> "Node.js"
+        .replace(/(\w)\s+\.\s+(\w)/g, '$1.$2')
+        // Collapse spaces after a period when followed by 3-digit groups (e.g. "700. 000" -> "700.000")
+        .replace(/\.\s+(\d{3})/g, '.$1')
         // Fix bullet points that are inline with text
         .replace(/\s+-\s+/g, '\n- ')
         // Fix periods followed by dash (common AI mistake)
         .replace(/\.\s*-\s*/g, '.\n- ')
-        // Fix double spaces
-        .replace(/\s{2,}/g, ' ')
         // Ensure newline after colon when followed by dash
         .replace(/:\s*-\s*/g, ':\n- ')
+        // Replace multiple spaces with single space
+        .replace(/\s{2,}/g, ' ')
         .trim();
     
     const lines = normalized.split('\n');

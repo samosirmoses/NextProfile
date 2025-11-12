@@ -78,13 +78,28 @@ const Chatbot: React.FC = () => {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({message: 'Unable to connect to server.'}));
-                throw new Error(errorData.message || 'Failed to connect to AI Assistant.');
+                const msgText = errorData?.message || 'Failed to connect to AI Assistant.';
+
+                const errorMessage: Message = {
+                    id: Date.now() + 1,
+                    text: msgText,
+                    sender: 'bot'
+                };
+                setMessages(prevMessages => [...prevMessages, errorMessage]);
+                return;
             }
 
             const data = await response.json();
 
             if (!data || !data.message) {
-                throw new Error('Invalid response from AI Assistant.');
+                const msgText = 'Invalid response from AI Assistant.';
+                const errorMessage: Message = {
+                    id: Date.now() + 1,
+                    text: msgText,
+                    sender: 'bot'
+                };
+                setMessages(prevMessages => [...prevMessages, errorMessage]);
+                return;
             }
 
             if (data.messageParts && Array.isArray(data.messageParts) && data.messageParts.length > 0) {
