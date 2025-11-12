@@ -11,7 +11,11 @@ interface Message {
     sender: "user" | "bot";
 }
 
-const Chatbot: React.FC = () => {
+interface ChatbotProps {
+    onClose?: () => void;
+}
+
+const Chatbot: React.FC<ChatbotProps> = ({ onClose }) => {
     const [inputText, setInputText] = useState('');
     const [messages, setMessages] = useState<Message[]>([
         {
