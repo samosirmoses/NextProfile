@@ -1,25 +1,47 @@
 import { GoogleGenAI } from "@google/genai";
 import { CACHE_CONFIG } from "./constants";
 
+interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+}
+
 interface GenerateContentParams {
   apiKey: string;
   cacheName: string | null;
   userMessage: string;
   careerContext?: string;
+  conversationHistory?: ChatMessage[];
 }
 
 export async function generateAIResponse(
   params: GenerateContentParams
 ): Promise<string> {
-  const { apiKey, cacheName, userMessage, careerContext } = params;
+  const { apiKey, cacheName, userMessage, careerContext, conversationHistory = [] } = params;
 
   const ai = new GoogleGenAI({ apiKey });
 
   try {
+    // Build conversation history for context
+    const historyMessages = conversationHistory
+      .slice(-10) // Last 10 messages for context
+      .map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.content }]
+      }));
+
     if (cacheName) {
       const response = await ai.models.generateContent({
         model: CACHE_CONFIG.MODEL_NAME,
-        contents: userMessage,
+        contents: [
+          ...historyMessages,
+          {
+            role: 'user',
+            parts: [{ text: userMessage }]
+          }
+        ],
         config: {
           cachedContent: cacheName,
           temperature: 1,
@@ -40,6 +62,7 @@ export async function generateAIResponse(
     const response = await ai.models.generateContent({
       model: CACHE_CONFIG.MODEL_NAME,
       contents: [
+        ...historyMessages,
         {
           role: "user",
           parts: [

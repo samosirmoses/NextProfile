@@ -10,74 +10,46 @@ export function splitMessageIntoBubbles(message: string): string[] {
   const { MAX_WORDS_PER_BUBBLE, MAX_BUBBLES } = MESSAGE_CONFIG;
   const messageParts: string[] = [];
 
-  // Pisahkan berdasarkan paragraf
-  const paragraphs = cleanedMessage
-    .split(/\n\n+/)
-    .filter(p => p.trim() !== '');
-
-  if (paragraphs.length < 1) {
-    return [cleanedMessage];
-  }
+  // Split by double newlines to preserve bullet point structure
+  const sections = cleanedMessage.split(/\n\n+/);
 
   let currentBubble = '';
   let currentWordCount = 0;
 
-  for (const paragraph of paragraphs) {
-    const sentences = paragraph.split(/([.?!])\s+/) || [paragraph];
+  for (const section of sections) {
+    const sectionWords = section.split(/\s+/).filter(Boolean);
+    const sectionWordCount = sectionWords.length;
 
-    for (const sentence of sentences) {
-      const sentenceWords = sentence.trim().split(/\s+/).filter(Boolean);
-      const sentenceWordCount = sentenceWords.length;
-
-      if (
-        currentWordCount + sentenceWordCount > MAX_WORDS_PER_BUBBLE &&
-        currentBubble.trim()
-      ) {
-        messageParts.push(currentBubble.trim());
-        currentBubble = sentence.trim();
-        currentWordCount = sentenceWordCount;
+    // If adding this section would exceed limit, start new bubble
+    if (currentWordCount + sectionWordCount > MAX_WORDS_PER_BUBBLE && currentBubble.trim()) {
+      messageParts.push(currentBubble.trim());
+      currentBubble = section;
+      currentWordCount = sectionWordCount;
+    } else {
+      // Add section to current bubble with proper spacing
+      if (currentBubble) {
+        currentBubble += '\n\n' + section;
       } else {
-        currentBubble += (currentBubble ? ' ' : '') + sentence.trim();
-        currentWordCount += sentenceWordCount;
+        currentBubble = section;
       }
-
-      if (messageParts.length >= MAX_BUBBLES - 1) {
-        break;
-      }
+      currentWordCount += sectionWordCount;
     }
 
+    // Stop if we've reached max bubbles
     if (messageParts.length >= MAX_BUBBLES - 1) {
       break;
     }
-
-    if (currentWordCount < MAX_WORDS_PER_BUBBLE * 0.8) {
-      currentBubble += '\n\n';
-    }
   }
 
+  // Add remaining content
   if (currentBubble.trim()) {
     messageParts.push(currentBubble.trim());
   }
 
-  if (messageParts.length >= MAX_BUBBLES) {
-    const totalAddedWords = messageParts.reduce(
-      (sum, part) => sum + part.split(/\s+/).filter(Boolean).length,
-      0
-    );
-    const allWords = cleanedMessage.split(/\s+/).filter(Boolean);
-
-    if (totalAddedWords < allWords.length) {
-      const remainingText = allWords.slice(totalAddedWords).join(' ');
-      if (remainingText.trim()) {
-        messageParts[messageParts.length - 1] += ' ' + remainingText.trim();
-      }
-    }
-  }
-
+  // If no parts were created, return original message
   if (messageParts.length === 0) {
     return [cleanedMessage];
   }
 
   return messageParts;
 }
-

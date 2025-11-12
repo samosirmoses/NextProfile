@@ -3,6 +3,7 @@ import React, {useState, useEffect, useRef} from "react";
 import { ChatMessage } from "./ChatMessage";
 import { sendQuestion } from "@/lib/sendQuestion";
 import { useDeviceType } from "@/hooks/useDeviceType";
+import { useChatContext } from "@/contexts/ChatContext";
 
 interface Message {
     id: number;
@@ -10,11 +11,7 @@ interface Message {
     sender: "user" | "bot";
 }
 
-interface ChatbotProps {
-    onClose?: () => void;
-}
-
-const Chatbot: React.FC<ChatbotProps> = ({ onClose }) => {
+const Chatbot: React.FC = () => {
     const [inputText, setInputText] = useState('');
     const [messages, setMessages] = useState<Message[]>([
         {
@@ -27,6 +24,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onClose }) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const deviceType = useDeviceType();
+    const { conversationHistory, addMessage, clearHistory } = useChatContext();
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
@@ -55,6 +53,14 @@ const Chatbot: React.FC<ChatbotProps> = ({ onClose }) => {
         setInputText('');
         setIsLoading(true);
 
+        // Add to conversation history
+        addMessage({
+            id: `user-${Date.now()}`,
+            role: 'user',
+            content: userMessageText,
+            timestamp: new Date()
+        });
+
         // Simpan pertanyaan ke Firestore (non-blocking)
         sendQuestion(userMessageText).catch(err => {
             console.error('Failed to save question:', err);
@@ -64,7 +70,10 @@ const Chatbot: React.FC<ChatbotProps> = ({ onClose }) => {
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: userMessageText})
+                body: JSON.stringify({
+                    message: userMessageText,
+                    history: conversationHistory
+                })
             });
 
             if (!response.ok) {
@@ -90,6 +99,14 @@ const Chatbot: React.FC<ChatbotProps> = ({ onClose }) => {
 
                     setMessages(prevMessages => [...prevMessages, botResponse]);
                 }
+
+                // Add complete response to conversation history
+                addMessage({
+                    id: `bot-${Date.now()}`,
+                    role: 'assistant',
+                    content: data.message,
+                    timestamp: new Date()
+                });
             } else {
                 const botResponse: Message = {
                     id: Date.now() + 1,
@@ -98,6 +115,14 @@ const Chatbot: React.FC<ChatbotProps> = ({ onClose }) => {
                 };
 
                 setMessages(prevMessages => [...prevMessages, botResponse]);
+
+                // Add to conversation history
+                addMessage({
+                    id: `bot-${Date.now()}`,
+                    role: 'assistant',
+                    content: data.message,
+                    timestamp: new Date()
+                });
             }
         } catch (error) {
             let errorText = "Sorry, there was a connection error. Please try again.";
@@ -133,6 +158,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onClose }) => {
             }
         ]);
         setInputText('');
+        clearHistory();
         inputRef.current?.focus();
     };
 
@@ -141,7 +167,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onClose }) => {
             className="w-full h-full bg-gradient-to-b from-gray-50 to-white overflow-hidden flex flex-col"
             role="region" aria-label="Chatbot">
             {/* Header with Avatar */}
-            <header className="relative px-5 py-4 md:py-5 border-b border-gray-200 bg-white/80 backdrop-blur-md">
+            <header className="relative px-4 sm:px-5 py-3 sm:py-4 md:py-5 border-b border-gray-200 bg-white/80 backdrop-blur-md">
                 {/* Decorative gradient line */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600"></div>
 
@@ -167,32 +193,21 @@ const Chatbot: React.FC<ChatbotProps> = ({ onClose }) => {
                     <div className="flex items-center gap-2">
                         <button
                             type="button"
-                            className="text-xs font-medium text-gray-600 px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors"
+                            className="text-xs font-medium text-gray-600 px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors flex items-center gap-1"
                             onClick={handleClearChat}
                             aria-label="Clear chat"
                         >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
+                            <span className="hidden sm:inline">Clear</span>
                         </button>
-                        {deviceType !== 'mobile' && onClose && (
-                            <button
-                                type="button"
-                                className="text-gray-500 hover:text-gray-700 transition-colors p-1"
-                                onClick={onClose}
-                                aria-label="Close chat"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        )}
                     </div>
                 </div>
             </header>
 
             {/* Messages Area */}
-            <div className="flex-1 p-4 md:p-5 overflow-y-auto space-y-4" role="list">
+            <div className="flex-1 p-3 sm:p-4 md:p-5 lg:p-6 overflow-y-auto space-y-4" role="list">
                 {messages.map(msg => (
                     <ChatMessage key={msg.id} message={msg}/>
                 ))}
@@ -211,10 +226,10 @@ const Chatbot: React.FC<ChatbotProps> = ({ onClose }) => {
             </div>
 
             {/* Input Area */}
-            <footer className="p-4 md:p-5 border-t border-gray-200 bg-white">
-                {/* Quick suggestions (optional) */}
+            <footer className="p-3 sm:p-4 md:p-5 border-t border-gray-200 bg-white">
+                {/* Quick suggestions */}
                 {messages.length === 1 && !isLoading && (
-                    <div className="flex gap-2 mb-3 overflow-x-auto pb-2">
+                    <div className="flex gap-2 mb-3 overflow-x-auto pb-2 scrollbar-hide">
                         {['Experience', 'Skills', 'Projects'].map((suggestion) => (
                             <button
                                 key={suggestion}

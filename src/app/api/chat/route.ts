@@ -1,9 +1,9 @@
-
 import { NextResponse } from "next/server";
 import { loadCareerContext } from "@/lib/context-loader";
 import { getOrCreateCache } from "@/lib/cache-manager";
 import { generateAIResponse } from "@/lib/ai-service";
 import { splitMessageIntoBubbles } from "@/lib/message-formatter";
+import { formatForChat } from "@/lib/text-formatter";
 import { AI_CHARACTER } from "@/lib/constants";
 
 
@@ -12,7 +12,7 @@ const careerContext = loadCareerContext();
 
 export async function POST(req: Request) {
   try {
-    const { message } = await req.json();
+    const { message, history } = await req.json();
 
     if (!message || typeof message !== 'string' || message.trim() === '') {
       return NextResponse.json(
@@ -36,16 +36,18 @@ export async function POST(req: Request) {
       cacheName,
       userMessage: message,
       careerContext: cacheName ? undefined : careerContext,
+      conversationHistory: history || [],
     });
 
-    const messageParts = splitMessageIntoBubbles(aiResponse);
+    const cleanedResponse = formatForChat(aiResponse);
+    const messageParts = splitMessageIntoBubbles(cleanedResponse);
 
     return NextResponse.json({
-      message: aiResponse,
+      message: cleanedResponse,
       messageParts: messageParts,
       success: true,
       character: AI_CHARACTER,
-      responseLength: aiResponse.length,
+      responseLength: cleanedResponse.length,
       totalParts: messageParts.length,
       timestamp: new Date().toISOString(),
       usedCache: cacheName !== null,
