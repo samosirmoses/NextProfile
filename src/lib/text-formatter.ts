@@ -23,7 +23,7 @@ export function stripMarkdown(text: string): string {
   // KEEP bullet points and numbered lists - they're useful!
   // We'll normalize them instead of removing
   
-  // Remove code blocks: ```code```
+  // Remove code blocks: ```code``` (using [\s\S] instead of 's' flag)
   cleaned = cleaned.replace(/```[\s\S]*?```/g, '');
   
   // Remove inline code: `code`
@@ -72,7 +72,7 @@ export function hasMarkdown(text: string): boolean {
     /\*\*.*?\*\*/,  // Bold
     /__.*?__/,      // Bold alt
     /^#{1,6}\s/m,   // Headings
-    /```.*?```/s,   // Code blocks
+    /```[\s\S]*?```/,   // Code blocks (using [\s\S] instead of 's' flag)
     /`.*?`/,        // Inline code
   ];
   

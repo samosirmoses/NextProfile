@@ -15,7 +15,7 @@ interface ChatbotProps {
     onClose?: () => void;
 }
 
-const Chatbot: React.FC<ChatbotProps> = ({ onClose }) => {
+const Chatbot: React.FC<ChatbotProps> = ({ onClose: _onClose }) => {
     const [inputText, setInputText] = useState('');
     const [messages, setMessages] = useState<Message[]>([
         {

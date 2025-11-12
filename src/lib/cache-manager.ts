@@ -1,6 +1,6 @@
 export async function getOrCreateCache(
-  apiKey: string,
-  careerContext: string
+  _apiKey: string,
+  _careerContext: string
 ): Promise<string | null> {
   return null;
 }
