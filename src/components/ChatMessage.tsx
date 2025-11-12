@@ -1,4 +1,4 @@
-import React from "react";
+import React, {JSX} from "react";
 
 export interface Message {
     id: number;
@@ -9,7 +9,7 @@ export interface Message {
 // Function to parse and format message text with proper bullet points and spacing
 const formatMessageText = (text: string) => {
     // First, normalize the text by fixing common AI formatting issues
-    let normalized = text
+    const normalized = text
         // Fix bullet points that are inline with text
         .replace(/\s+-\s+/g, '\n- ')
         // Fix periods followed by dash (common AI mistake)
